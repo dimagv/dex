@@ -186,10 +186,11 @@ func (c *oidcConnector) HandleCallback(s connector.Scopes, r *http.Request) (ide
 	}
 
 	var claims struct {
-		Username      string `json:"name"`
-		Email         string `json:"email"`
-		EmailVerified bool   `json:"email_verified"`
-		HostedDomain  string `json:"hd"`
+		Username      string   `json:"name"`
+		Groups        []string `json:"https://auth/groups"`
+		Email         string   `json:"email"`
+		EmailVerified bool     `json:"email_verified"`
+		HostedDomain  string   `json:"hd"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		return identity, fmt.Errorf("oidc: failed to decode claims: %v", err)
@@ -212,6 +213,7 @@ func (c *oidcConnector) HandleCallback(s connector.Scopes, r *http.Request) (ide
 	identity = connector.Identity{
 		UserID:        idToken.Subject,
 		Username:      claims.Username,
+		Groups:        claims.Groups,
 		Email:         claims.Email,
 		EmailVerified: claims.EmailVerified,
 	}
